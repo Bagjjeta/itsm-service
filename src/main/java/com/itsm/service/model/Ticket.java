@@ -34,12 +34,16 @@ public class Ticket {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private TicketStatus status = TicketStatus.NEW;
 
-    @Column(nullable = false)
-    private Long reporterId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reporter_id", nullable = false)
+    private User reporter;
 
-    private Long assigneeId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assignee_id")
+    private User assignee;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

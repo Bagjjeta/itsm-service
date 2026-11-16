@@ -1,4 +1,7 @@
 package com.itsm.service.dto;
 
-public class CreateCommentRequest {
+public record CreateCommentRequest(
+        Long authorId,
+        String content
+) {
 }
