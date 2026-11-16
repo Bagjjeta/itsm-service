@@ -14,11 +14,13 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     @Query("""
             SELECT t FROM Ticket t
+            LEFT JOIN FETCH t.reporter r
+            LEFT JOIN FETCH t.assignee a
             WHERE (:status IS NULL OR t.status = :status)
               AND (:priority IS NULL OR t.priority = :priority)
               AND (:category IS NULL OR t.category = :category)
-              AND (:reporterId IS NULL OR t.reporterId = :reporterId)
-              AND (:assigneeId IS NULL OR t.assigneeId = :assigneeId)
+              AND (:reporterId IS NULL OR r.id = :reporterId)
+              AND (:assigneeId IS NULL OR a.id = :assigneeId)
             """)
     List<Ticket> findByFilters(
             @Param("status") TicketStatus status,

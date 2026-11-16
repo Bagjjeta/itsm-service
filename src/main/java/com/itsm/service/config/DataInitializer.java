@@ -1,7 +1,7 @@
 package com.itsm.service.config;
 
-import com.itsm.service.model.Role;
-import com.itsm.service.model.User;
+import com.itsm.service.model.*;
+import com.itsm.service.repository.TicketRepository;
 import com.itsm.service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -14,7 +14,7 @@ import java.util.List;
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
-
+    private final TicketRepository ticketRepository;
 
     @Override
     public void run(String... args) {
@@ -114,6 +114,48 @@ public class DataInitializer implements CommandLineRunner {
             ));
 
             System.out.println("Załadowano 10 startowych użytkowników do bazy danych.");
+        }
+
+        if (ticketRepository.count() == 0) {
+            List<User> users = userRepository.findAll();
+            User reporter1 = users.get(0); // Jan Kowalski (EMPLOYEE)
+            User reporter2 = users.get(1); // Maria Wiśniewska (EMPLOYEE)
+            User reporter3 = users.get(2); // Tomasz Zieliński (EMPLOYEE)
+            User specialist1 = users.get(5); // Anna Nowak (IT_SPECIALIST)
+            User specialist2 = users.get(6); // Paweł Lewandowski (IT_SPECIALIST)
+
+            Ticket ticket1 = Ticket.builder()
+                    .title("Problem z drukarką sieciową w dziale HR")
+                    .description("Drukarka na 2 piętrze nie pobiera papieru i wyświetla kod błędu E04.")
+                    .category(TicketCategory.HARDWARE)
+                    .priority(TicketPriority.MEDIUM)
+                    .status(TicketStatus.NEW)
+                    .reporter(reporter1)
+                    .assignee(null)
+                    .build();
+
+            Ticket ticket2 = Ticket.builder()
+                    .title("Wniosek o dostęp do systemu finansowego SAP")
+                    .description("Proszę o nadanie uprawnień do modułu faktur dla nowego pracownika.")
+                    .category(TicketCategory.ACCESS)
+                    .priority(TicketPriority.HIGH)
+                    .status(TicketStatus.IN_PROGRESS)
+                    .reporter(reporter2)
+                    .assignee(specialist1)
+                    .build();
+
+            Ticket ticket3 = Ticket.builder()
+                    .title("Awaria VPN podczas pracy zdalnej")
+                    .description("Klient VPN rozłącza połączenie po 5 minutach od zalogowania.")
+                    .category(TicketCategory.FAILURE)
+                    .priority(TicketPriority.CRITICAL)
+                    .status(TicketStatus.RESOLVED)
+                    .reporter(reporter3)
+                    .assignee(specialist2)
+                    .build();
+
+            ticketRepository.saveAll(List.of(ticket1, ticket2, ticket3));
+            System.out.println("Załadowano 3 startowe zgłoszenia do bazy danych.");
         }
     }
 }
